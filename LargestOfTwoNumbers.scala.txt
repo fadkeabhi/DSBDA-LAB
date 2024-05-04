@@ -1,0 +1,21 @@
+object LargestOfTwoNumbers {
+  def main(args: Array[String]): Unit = {
+    println("Enter the first number:")
+    val number1 = scala.io.StdIn.readInt()
+
+    println("Enter the second number:")
+    val number2 = scala.io.StdIn.readInt()
+    
+    if(number1 == number2){
+        println(s"Both Numbers are same: $number2")
+    } else{
+      val largest = if (number1 > number2) number1 else number2
+      val smallest = if (number1 < number2) number1 else number2
+
+      println(s"The largest number is: $largest")
+      println(s"The smallest number is: $smallest")
+    }
+
+    
+  }
+}
