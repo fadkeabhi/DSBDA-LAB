@@ -20,10 +20,18 @@ val top404Hosts = cleaned_df.filter($"Status" === 404).groupBy("IP").count().ord
 println("Top Twenty-five 404 Response Code Hosts:")
 top404Hosts.show(false)
 
+val uniqueDailyHosts = cleaned_df.select(regexp_extract($"Time", """\d+/[A-Z][a-z]+/\d{4}""", 0).alias("Date"), $"IP").groupBy("Date").agg(countDistinct("IP").as("Distinct IP Count") )
+
+println("Number of Unique Daily Hosts: ")
+uniqueDailyHosts.show()
+
+
+
+
+/* Below Not Required*/
+
 val uniqueDailyHosts = cleaned_df.select($"IP", date_format($"Time", "yyyy-MM-dd").alias("Date")).distinct().groupBy("Date").count().count()
 println("Number of Unique Daily Hosts: " + uniqueDailyHosts)
-
-
 
 
 import org.apache.spark.sql.functions._

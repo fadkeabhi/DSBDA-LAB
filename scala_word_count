@@ -10,3 +10,9 @@ val sortedWordCounts = wordCounts.sortBy(_._2, ascending = false)
 
 // Show the results
 sortedWordCounts.collect().foreach(println)
+
+sortedWordCounts.toDebugString
+
+sortedWordCounts.cache()
+
+sortedWordCounts.saveAsTextFile("output")
