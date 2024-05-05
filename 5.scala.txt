@@ -1,0 +1,41 @@
+/*
+    Problem Statement No. 05
+Write a Scala Program to process a log file of a system and perform following analytics on the given dataset.
+(I) Display the list of top 10 frequent hosts.
+(II) Display the list of top 5 URLs or paths
+(III) Display the number of unique Hosts
+
+*/
+
+val pathToDataSet = "/home/kali/DJABRJ/spark_pract/weblog.csv"
+
+val df = spark.read.option("header", "true").option("inferSchema", "true")csv(pathToDataSet)
+
+
+val topHosts = df.groupBy("IP").count().orderBy($"count".desc).limit(10)
+val topUrls = df.groupBy("URL").count().orderBy($"count".desc).limit(5)
+val uniqueHosts = df.select("IP").distinct().count()
+
+println("Top 10 frequent hosts:")
+topHosts.show(false)
+
+println("\nTop 5 URLs or paths:")
+topUrls.show(false)
+
+println("\nNumber of unique Hosts:")
+println(uniqueHosts)
+
+val cleaned_df = df.filter($"IP".rlike("^\\d+\\.\\d+\\.\\d+\\.\\d+$"))
+
+val topHosts_cleaned = cleaned_df.groupBy("IP").count().orderBy($"count".desc).limit(10)
+val topUrls_cleaned = cleaned_df.groupBy("URL").count().orderBy($"count".desc).limit(5)
+val uniqueHosts_cleaned = cleaned_df.select("IP").distinct().count()
+
+println("Top 10 frequent hosts:")
+topHosts_cleaned.show(false)
+
+println("\nTop 5 URLs or paths:")
+topUrls_cleaned.show(false)
+
+println("\nNumber of unique Hosts:")
+println(uniqueHosts_cleaned)

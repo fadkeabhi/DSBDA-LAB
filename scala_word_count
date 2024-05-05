@@ -1,0 +1,12 @@
+// Read the input file
+val pathToDataSet = "/home/kali/Downloads/spark_pract/textFile.txt"
+val textFile = sc.textFile(pathToDataSet)
+
+// Count the occurrences of each word
+val wordCounts = textFile.flatMap(_.split("\\s+")).map(word => (word.toLowerCase, 1)).reduceByKey(_ + _)
+
+// Sort the wordCounts RDD by count in descending order
+val sortedWordCounts = wordCounts.sortBy(_._2, ascending = false)
+
+// Show the results
+sortedWordCounts.collect().foreach(println)

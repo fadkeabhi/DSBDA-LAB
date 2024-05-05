@@ -1,0 +1,43 @@
+/*
+Write a Scala Program to process a log file of a system and perform following analytics on the given dataset.
+(I) Display the count of 404 Response Codes 
+(II) Display the list of Top Twenty-five 404 Response Code Hosts
+(III) Display the number of Unique Daily Hosts
+
+*/
+
+val pathToDataSet = "/home/kali/DJABRJ/spark_pract/weblog.csv"
+
+val df = spark.read.option("header", "true").option("inferSchema", "true")csv(pathToDataSet)
+
+val cleaned_df = df.filter($"IP".rlike("^\\d+\\.\\d+\\.\\d+\\.\\d+$"))
+
+
+val count404 = cleaned_df.filter($"Status" === 404).count()
+
+
+val top404Hosts = cleaned_df.filter($"Status" === 404).groupBy("IP").count().orderBy($"count".desc).limit(25)
+println("Top Twenty-five 404 Response Code Hosts:")
+top404Hosts.show(false)
+
+val uniqueDailyHosts = cleaned_df.select($"IP", date_format($"Time", "yyyy-MM-dd").alias("Date")).distinct().groupBy("Date").count().count()
+println("Number of Unique Daily Hosts: " + uniqueDailyHosts)
+
+
+
+
+import org.apache.spark.sql.functions._
+
+val formatted_df = cleaned_df.withColumn("FormattedTime", from_unixtime(unix_timestamp($"Time", "[dd/MMM/yyyy:HH:mm:ss")))
+formatted_df.show(false)
+
+spark.conf.set("spark.sql.legacy.timeParserPolicy", "LEGACY")
+
+val formatted_df = cleaned_df.withColumn("FormattedTime", from_unixtime(unix_timestamp($"Time", "[dd/MMM/yyyy:HH:mm:ss")))
+formatted_df.show(false)
+
+val uniqueDailyHosts = formatted_df.select($"IP", date_format($"FormattedTime", "yyyy-MM-dd").alias("Date")).groupBy("Date").count()
+val uniqueDailyHosts_count = uniqueDailyHosts.count().intValue()
+
+println("Number of Unique Daily Hosts: ")
+uniqueDailyHosts.show(uniqueDailyHosts_count)
